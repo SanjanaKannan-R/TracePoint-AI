@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chat - TracePoint AI</title>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #0f172a, #1e293b);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .taskbar {
+      background: #151B54;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .taskbar-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    .taskbar a {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .taskbar a:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 900px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: #FFFFFF;
+      color: #151B54;
+      border: 1px solid #151B54;
+      border-radius: 8px;
+      padding: 20px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      min-height: 400px;
+      max-height: 600px;
+    }
+
+    .message {
+      margin-bottom: 20px;
+    }
+
+    .message-user {
+      text-align: right;
+    }
+
+    .message-label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+      color: #151B54;
+    }
+
+    .message-content {
+      display: inline-block;
+      padding: 12px 16px;
+      border-radius: 8px;
+      max-width: 80%;
+      text-align: left;
+      line-height: 1.6;
+    }
+
+    .message-user .message-content {
+      background: #38bdf8;
+      color: #151B54;
+    }
+
+    .message-ai .message-content {
+      background: #f2f2f2;
+      color: #151B54;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+      padding: 20px;
+      background: #FFFFFF;
+      border: 1px solid #151B54;
+      border-radius: 8px;
+    }
+
+    #msg {
+      flex: 1;
+      padding: 14px 16px;
+      background: #FFFFFF;
+      border: 1px solid #151B54;
+      border-radius: 6px;
+      color: #151B54;
+      font-size: 1rem;
+      font-family: Arial, sans-serif;
+    }
+
+    #msg:focus {
+      outline: none;
+      border-color: #38bdf8;
+    }
+
+    button {
+      padding: 14px 30px;
+      background: #151B54;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background: #38bdf8;
+      color: #151B54;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      text-align: center;
+      color: #151B54;
+      padding: 10px;
+      font-weight: bold;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #151B54;
+      padding: 40px;
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+      .message-content { max-width: 90%; }
+      .input-area { flex-direction: column; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="taskbar">
+    <div class="taskbar-title">TracePoint AI - AI Chat</div>
+    <a href="/dashboard">← Dashboard</a>
+  </header>
+
+  <div class="chat-container">
+    <div id="chatbox">
+      <div class="empty-state">
+        👋 Hi! I'm your AI coding teacher. Ask me anything about programming!
+      </div>
+    </div>
+
+    <div class="input-area">
+      <input 
+        type="text" 
+        id="msg" 
+        placeholder="Ask me about code, programming concepts, or debugging..."
+        onkeypress="if(event.key==='Enter') sendMessage()"
+      >
+      <button onclick="sendMessage()" id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatbox = document.getElementById("chatbox");
+    const msgInput = document.getElementById("msg");
+    const sendBtn = document.getElementById("sendBtn");
+
+    let isFirstMessage = true;
+
+    async function sendMessage() {
+      const msg = msgInput.value.trim();
+      if (!msg) return;
+
+      if (isFirstMessage) {
+        chatbox.innerHTML = '';
+        isFirstMessage = false;
+      }
+
+      msgInput.disabled = true;
+      sendBtn.disabled = true;
+
+      addMessage(msg, 'user');
+      msgInput.value = '';
+
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'loading';
+      loadingDiv.id = 'loading';
+      loadingDiv.innerHTML = '🤔 Thinking...';
+      chatbox.appendChild(loadingDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({message: msg})
+        });
+
+        const data = await res.json();
+        
+        document.getElementById('loading').remove();
+
+        if (data.error) {
+          addMessage(`Error: ${data.error}`, 'ai');
+        } else {
+          addMessage(data.reply, 'ai');
+        }
+      } catch (error) {
+        document.getElementById('loading')?.remove();
+        addMessage('Sorry, something went wrong. Please try again.', 'ai');
+      }
+
+      msgInput.disabled = false;
+      sendBtn.disabled = false;
+      msgInput.focus();
+    }
+
+    function addMessage(text, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message message-${type}`;
+      
+      const label = document.createElement('div');
+      label.className = 'message-label';
+      label.textContent = type === 'user' ? 'You' : '🤖 AI Teacher';
+      
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      content.textContent = text;
+      
+      messageDiv.appendChild(label);
+      messageDiv.appendChild(content);
+      chatbox.appendChild(messageDiv);
+      
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    msgInput.focus();
+  </script>
+</body>
+</html>

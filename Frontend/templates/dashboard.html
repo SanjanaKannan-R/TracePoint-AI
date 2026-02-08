@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - TracePoint AI</title>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #0f172a, #1e293b);
+      color: white;
+      min-height: 100vh;
+    }
+
+    .taskbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #151B54;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+
+    .taskbar-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    .taskbar-menu {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .user-info {
+      color: #ffffff;
+      font-size: 0.95rem;
+    }
+
+    .taskbar-menu a {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .taskbar-menu a:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 100px auto 40px;
+      padding: 0 40px;
+    }
+
+    .welcome {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .welcome h2 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+
+    .welcome p {
+      color: #ffffff;
+      font-size: 1.1rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .card {
+      background: #e5e8e8;
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.3);
+    }
+
+    .card-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .card h3 {
+      color: #151b54;
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: #151b54;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .card a {
+      display: inline-block;
+      padding: 12px 30px;
+      background: #38bdf8;
+      color: #151B54;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .card a:hover {
+      background: #22d3ee;
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .taskbar { padding: 15px 20px; }
+      .container { padding: 0 20px; }
+      .welcome h2 { font-size: 1.8rem; }
+      .cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="taskbar">
+    <div class="taskbar-title">TracePoint AI</div>
+    <div class="taskbar-menu">
+      <div class="user-info">{{ user.email }}</div>
+      <a href="/logout">Logout</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="welcome">
+      <h2>Welcome back!</h2>
+      <p>Choose a tool to start analyzing your code</p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">💬</div>
+        <h3>AI Chat</h3>
+        <p>Ask questions about coding concepts and get instant AI-powered explanations from your teaching assistant.</p>
+        <a href="/chat/page">Start Chat</a>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <h3>Code Analysis</h3>
+        <p>Paste your code to get detailed explanations and see it run in a safe sandbox environment.</p>
+        <a href="/analyze/page">Analyze Code</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
