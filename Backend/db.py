@@ -15,10 +15,11 @@ def init_db():
     with get_conn() as conn:
         c = conn.cursor()
         
-        # Users table
+        # Users table with username
         c.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
@@ -53,23 +54,26 @@ def init_db():
 
 # ==================== USER AUTH ====================
 
-def create_user(email, password):
+def create_user(username, email, password):
     """Create a new user account"""
-    if not email or not password:
-        raise ValueError("Email and password are required")
+    if not username or not email or not password:
+        raise ValueError("Username, email and password are required")
     
     with get_conn() as conn:
         c = conn.cursor()
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
         try:
             c.execute(
-                "INSERT INTO users (email, password) VALUES (?, ?)",
-                (email.lower(), hashed_password)
+                "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+                (username, email.lower(), hashed_password)
             )
             conn.commit()
             return True
-        except sqlite3.IntegrityError:
-            raise ValueError("User with this email already exists")
+        except sqlite3.IntegrityError as e:
+            if "username" in str(e):
+                raise ValueError("Username already taken")
+            else:
+                raise ValueError("Email already registered")
 
 def get_user_by_email(email):
     """Retrieve user by email"""
@@ -88,7 +92,7 @@ def get_user_by_id(user_id):
 def verify_user(email, password):
     """Verify user credentials"""
     user = get_user_by_email(email)
-    if user and check_password_hash(user[2], password):
+    if user and check_password_hash(user[3], password):  # password is now index 3
         return user
     return None
 
@@ -110,6 +114,20 @@ def get_history(user_id, limit=50):
         c = conn.cursor()
         c.execute(
             """SELECT message, response, timestamp 
+               FROM chat_history 
+               WHERE user_id=? 
+               ORDER BY id DESC 
+               LIMIT ?""",
+            (user_id, limit)
+        )
+        return c.fetchall()
+
+def get_chat_sessions(user_id, limit=20):
+    """Get chat sessions with first message preview"""
+    with get_conn() as conn:
+        c = conn.cursor()
+        c.execute(
+            """SELECT id, message, timestamp 
                FROM chat_history 
                WHERE user_id=? 
                ORDER BY id DESC 
