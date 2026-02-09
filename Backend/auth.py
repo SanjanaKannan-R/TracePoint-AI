@@ -7,7 +7,8 @@ auth = Blueprint("auth", __name__)
 class User(UserMixin):
     def __init__(self, row):
         self.id = row[0]
-        self.email = row[1]
+        self.username = row[1]
+        self.email = row[2]
     
     def get_id(self):
         return str(self.id)
@@ -18,11 +19,16 @@ def signup():
         return redirect(url_for("dashboard"))
     
     if request.method == "POST":
+        username = request.form.get("username", "").strip()
         email = request.form.get("email", "").strip()
         password = request.form.get("password", "")
         
-        if not email or not password:
-            flash("Email and password are required", "error")
+        if not username or not email or not password:
+            flash("Username, email and password are required", "error")
+            return render_template("signup.html")
+        
+        if len(username) < 3:
+            flash("Username must be at least 3 characters", "error")
             return render_template("signup.html")
         
         if len(password) < 6:
@@ -30,12 +36,13 @@ def signup():
             return render_template("signup.html")
         
         try:
-            create_user(email, password)
+            create_user(username, email, password)
             flash("Account created successfully! Please log in.", "success")
-            # Redirect to login page after successful signup
             return redirect(url_for("auth.login"))
+        except ValueError as e:
+            flash(str(e), "error")
         except Exception as e:
-            flash("User already exists or registration failed", "error")
+            flash("Registration failed. Please try again.", "error")
     
     return render_template("signup.html")
 
