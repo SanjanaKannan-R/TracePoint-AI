@@ -1,0 +1,7 @@
+# TracePoint AI - Requirements
+Flask
+Flask-Login
+Flask-CORS
+Werkzeug
+google-genai
+gunicorn
