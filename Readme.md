@@ -3,11 +3,11 @@
 
 ## Executive Summary
 
-TracePoint AI is a full-stack web application that combines AI-powered code analysis with educational features. The platform offers three main functionalities:
-
-1. **AI Chat Assistant** - Interactive coding tutor
-2. **Code Analysis Tool** - Real-time code explanation and execution
-3. **Forensic Analysis** - Deep code structure and security analysis
+## 📋 What is TracePoint AI?
+TracePoint AI is a full-stack web application that combines AI-powered code analysis with educational features. 
+TracePoint AI is an educational platform that helps you learn coding through:
+- 💬 **AI Chat** - Ask programming questions and get instant answers
+- 🔍 **Code Analysis** - Understand and run your code with AI explanations
 
 ### Technology Stack
 
@@ -36,15 +36,6 @@ TracePoint AI is a full-stack web application that combines AI-powered code anal
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org)
 [![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)](https://flask.palletsprojects.com)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini-orange.svg)](https://openai.com)
-
----
-
-## 📋 What is TracePoint AI?
-
-TracePoint AI is an educational platform that helps you learn coding through:
-- 💬 **AI Chat** - Ask programming questions and get instant answers
-- 🔍 **Code Analysis** - Understand and run your code with AI explanations
-- 🕵️ **Forensic Tool** - Deep analysis of code structure and quality
 
 ---
 
@@ -271,12 +262,7 @@ chat_history   → id, user_id, message, response, timestamp
 ✅ Dangerous operations blocked (no file access, no system calls)  
 ✅ Secure session management  
 
----<div align="center">
-
 **Built with ❤️ for learning to code**
 
 🔍 **TracePoint AI** - Making code analysis simple
 
-**Version 2.0** | February 2026
-
-</div>
